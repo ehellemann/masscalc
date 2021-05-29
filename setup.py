@@ -1,6 +1,6 @@
 """
 massCalc
-This is a module that will take a protein sequence and a labeling method and calculate the proteins moelcular weight.
+This is a module that will take a protein sequence and a labeling method and calculate the proteins molecular weight.
 """
 import sys
 from setuptools import setup, find_packages
