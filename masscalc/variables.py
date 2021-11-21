@@ -4,15 +4,21 @@ class Protein:
     global residues
     def __init__(self, name, sequence, labeling=None):
         self.name = name
-        self.sequence = self.get_sequence(sequence)
-        self.text_sequence = sequence
+        self.sequence = self.get_list_residues(sequence)
+        self.text_sequence = self.get_sequence(self.sequence)
         self.molecular_weight = self.calc_mol_weight()
 
-    def get_sequence(self, sequence):
-        seq =[]
-        for res in  sequence:
-            seq.append(residues[res])
-        return seq
+    def get_list_residues(self, sequence):
+        list_residues =[]
+        for res in sequence:
+            list_residues.append(residues[res])
+        return list_residues
+    
+    def get_sequence(self,list_residues):
+        sequence = ""
+        for res in list_residues:
+            sequence += res.one_letter
+        return sequence
 
     def calc_mol_weight(self, labeling=None):
         molecular_weight = 0
