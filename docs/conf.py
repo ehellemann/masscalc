@@ -23,7 +23,7 @@ import masscalc
 # -- Project information -----------------------------------------------------
 
 project = 'massCalc'
-copyright = ("2019, Erich Hellemann. Project structure based on the "
+copyright = ("2021, Erich Hellemann. Project structure based on the "
              "Computational Molecular Science Python Cookiecutter version 1.1")
 author = 'Erich Hellemann'
 

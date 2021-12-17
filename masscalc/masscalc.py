@@ -10,10 +10,26 @@ import sys
 import re
 from variables import *
 import argparse
-#import tkinter as tk
+# import tkinter as tk
+
+
+def check_input_file(filename):
+    import yaml
+    with open(filename, "r") as f:
+        settings = yaml.safe_load(f.read())
+    if settings["massCalc"]["filetype"] == "pdb":
+        pass
+    else:
+        proteins = read_fasta(settings["massCalc"]["filename"])
+    return settings["massCalc"]["labeling"], proteins
+
+
+def parse_labeling(labeling):
+    pass
 
 
 def start_gui():
+    print("Not implemented yet")
     sys.exit()
 
 
@@ -21,18 +37,18 @@ def formating_seq(input_sequence):
     input_sequence = input_sequence.upper()
     input_sequence = input_sequence.replace(' ', '')
     protein_sequence = re.sub('\d', '', input_sequence)
-    return protein_sequence #TODO add error if there is something wrong
+    return protein_sequence  # TODO add error if there is something wrong
 
 
 def read_fasta(filename):
-    # opening the fasta file 
+    # opening the fasta file
     if os.path.isfile(filename):
         with open(filename, 'r') as f:
             text = f.readlines()
     else:
         print("File: {} does not exist".format(filename))
-        sys.exit() #TODO maybe add logging
-    # Parses the fasta file 
+        sys.exit()  # TODO maybe add logging
+    # Parses the fasta file
     if not text[0].startswith(">"):
         print("make sure fasta file is formated correctly")
     proteins = []
@@ -42,7 +58,7 @@ def read_fasta(filename):
             lines_with_start.append(n)
     for i in range(len(lines_with_start) - 1):
         sequence = ""
-        for line in text[lines_with_start[i] + 1 : lines_with_text[i + 1]]:
+        for line in text[lines_with_start[i] + 1:lines_with_text[i + 1]]:
             new_line = re.sub("\n", "", line)
             sequence += new_line
         try:
@@ -58,26 +74,33 @@ if __name__ == "__main__":
     # Do something if this file is invoked on its own
     parser = argparse.ArgumentParser(
         description="Mass calculator for labeled proteins.")
+    parser.add_argument("-i", "--input", type=str, help="Define the input file to be processed.")
     parser.add_argument("-f", "--file", type=str, help="Define the fasta file to be processed.")
-    parser.add_argument("-s", "--seq", type=str, help="sequence to calculate molecular weight.")
-    parser.add_argument("-l", "--label", nargs="*", type=str, help="labeling method. Options carbon, nitrogen, deuterium and ILV")
+    parser.add_argument("-s", "--seq", type=str, help="Sequence to calculate molecular weight.")
+    parser.add_argument("-l", "--label", nargs="*", type=str, help="Labeling method. Options C (carbon), N (nitrogen), D (deuterium) and ILV")
     parser.add_argument("-g", "--gui", action="store_true", help="GUI version for the program")
+    parser.add_argument("-m", "--mass", type=float, help="Experimental mass. Will provide percent labeling.")
     args = parser.parse_args()
-    
+
+    # at some point will implement a GUI for this
     if args.gui:
         start_gui()
-    
+
+    # Read input file with 
+    if args.input:
+        labeling, sequences = check_input_file(args.input)
+
     if args.label:
         labeling = parse_labeling(args.label)
     else:
         labeling = None
-        
+
     if args.file:
         if args.file.split(".")[-1] == "pdb":
             proteins = read_pdb(args.file)
         else:
             proteins = read_fasta(args.file)
-        
+
         lines_to_print = []
         length = 0
         for protein in proteins:
@@ -90,7 +113,7 @@ if __name__ == "__main__":
             print(name)
             print(line)
         print("=" * length)
-    
+
     elif args.seq:
         sequence = formating_seq(args.seq)
         protein = Protein("Protein", sequence)
@@ -98,8 +121,8 @@ if __name__ == "__main__":
         print("=" * len(line))
         print(line)
         print("=" * len(line))
-    
+
     else:
         print("""There was no argument given. Please add arguments to the script. For help type:
         python masscalc.py --help""")
-    
+
